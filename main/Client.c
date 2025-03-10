@@ -1,52 +1,60 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
-#define PORT 55000
+#define SERVER_IP "192.168.178.148"
+#define SERVER_PORT 8080
 #define BUFFER_SIZE 1024
 
 int main() {
-    int sock;
+    int sockfd;
     struct sockaddr_in server_addr;
-    char buffer[BUFFER_SIZE];
+    char message[BUFFER_SIZE];
 
-    // Socket erstellen
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) {
-        perror("Socket Fehler");
-        exit(1);
+    // Create socket
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        perror("Socket creation error");
+        exit(EXIT_FAILURE);
     }
 
-    // Server-Adresse konfigurieren
+    // Set server address
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
+    server_addr.sin_port = htons(SERVER_PORT);
 
-    // IP-Adresse vom Benutzer abfragen
-    char server_ip[BUFFER_SIZE];
-    printf("Bitte geben Sie die Server-IP ein: ");
-    fgets(server_ip, BUFFER_SIZE, stdin);
-    server_ip[strcspn(server_ip, "\n")] = 0;  // Newline entfernen
-
-    server_addr.sin_addr.s_addr = inet_addr(server_ip); // Benutzerdefinierte Server-IP
-
-    // Verbindung zum Server
-    if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        perror("Verbindungsfehler");
-        exit(1);
+    // Convert IPv4 and IPv6 addresses from text to binary form
+    if (inet_pton(AF_INET, SERVER_IP, &server_addr.sin_addr) <= 0) {
+        perror("Invalid address/ Address not supported");
+        exit(EXIT_FAILURE);
     }
-    printf("Verbunden mit Server\n");
 
-    // Nachrichten senden
+    // Connect to server
+    if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        perror("Connection failed");
+        exit(EXIT_FAILURE);
+    }
+
     while (1) {
-        printf("Du: ");
-        fgets(buffer, BUFFER_SIZE, stdin);
-        buffer[strcspn(buffer, "\n")] = 0;  // Newline entfernen
+        // Get message from user
+        printf("Enter message (type 'exit' to quit): ");
+        fgets(message, BUFFER_SIZE, stdin);
 
-        send(sock, buffer, strlen(buffer), 0);
+        // Remove newline character from message
+        message[strcspn(message, "\n")] = 0;
+
+        // Check if the user wants to exit
+        if (strcmp(message, "exit") == 0) {
+            break;
+        }
+
+        // Send message to server
+        send(sockfd, message, strlen(message), 0);
+        printf("Message sent to %s:%d\n", SERVER_IP, SERVER_PORT);
     }
 
-    close(sock);
+    // Close socket
+    close(sockfd);
+
     return 0;
 }
