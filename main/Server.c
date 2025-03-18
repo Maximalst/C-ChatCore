@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
     char buffer[BUFFER_SIZE] = {0};
     FILE *file;
 
+
     // Create socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("socket failed");
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]) {
         perror("bind failed");
         close(server_fd);
         exit(EXIT_FAILURE);
+        printf("Bind failed nitte neu iniziiren");
     }
 
     // Listen for incoming connections
