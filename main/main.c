@@ -143,6 +143,8 @@ int main() {
         printf("| |____     | |____| | | | (_| | |_| |___| (_) | | |  __/\n");
         printf(" \\_____|     \\_____|_| |_|\\__,_|\\__|\\_____\\___/|_|  \\___|\n");
 
+        printf("V0.004\n");
+
         printf("Auswahlmenü:\n");
         printf("1. Client\n");
         printf("2. Server \n");
