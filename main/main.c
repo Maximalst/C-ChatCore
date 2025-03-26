@@ -4,9 +4,10 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+
+
+
 // Config
-
-
 int port = 187; // port to listen on server
 
 // Config end
@@ -43,11 +44,6 @@ int Server() {
     }
 
     printf("Server is listening on port %d\n", port);
-
-
-
-
-
 
 
     return 0;
